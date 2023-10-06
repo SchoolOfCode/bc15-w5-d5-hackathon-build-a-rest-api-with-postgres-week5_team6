@@ -4,54 +4,50 @@ async function resetDatabase() {
   try {
     // Drop existing tables if they exist
     await pool.query(`
-      DROP TABLE IF EXISTS books CASCADE;
-      DROP TABLE IF EXISTS authors CASCADE;
+      DROP TABLE IF EXISTS errors CASCADE;
+      DROP TABLE IF EXISTS responses CASCADE;
     `);
 
-    // Create the authors table
+    // Create the errors table with a foreign key to the responses table
     await pool.query(`
-      CREATE TABLE authors (
+      CREATE TABLE errors (
         id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-        first_name VARCHAR(255) NOT NULL,
-        last_name VARCHAR(255) NOT NULL
+        description TEXT NOT NULL,
+        workshop VARCHAR(255),
+        error_code VARCHAR(255),
+        error_message TEXT
       );
     `);
 
-    // Create the books table with a foreign key to the authors table
+    // Create the responses table
     await pool.query(`
-      CREATE TABLE books (
-        id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-        title VARCHAR(255) NOT NULL,
-        published_date DATE,
-        author_id INT REFERENCES authors(id)
-      );
+        CREATE TABLE responses (
+          id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+          cause TEXT NOT NULL,
+          solution TEXT NOT NULL,
+          error_id INT REFERENCES errors(id) NOT NULL
+        );
+      `);
+
+    // Seed the errors table
+    await pool.query(`
+      INSERT INTO errors (description, workshop, error_code, error_message)
+      VALUES 
+      ('Network Error', 'Workshop A', 'ERR-001', 'Failed to connect to the server.'),
+      ('File Not Found', 'Workshop B', 'ERR-002', 'The requested file does not exist.'),
+      ('Database Connection Error', 'Workshop C', 'ERR-003', 'Unable to establish a database connection.'),
+      ('Permission Denied', 'Workshop A', 'ERR-004', 'You do not have permission to access this resource.');
     `);
 
-    // Seed the authors table
+    // Seed the responses table
     await pool.query(`
-      INSERT INTO authors (first_name, last_name)
-      VALUES 
-        ('George', 'Orwell'),
-        ('J.K.', 'Rowling'),
-        ('J.R.R.', 'Tolkien'),
-        ('Agatha', 'Christie');
-    `);
-
-    // Seed the books table
-    await pool.query(`
-      INSERT INTO books (title, published_date, author_id)
-      VALUES 
-        ('1984', '1949-06-08', 1),
-        ('Animal Farm', '1945-08-17', 1),
-        ('Harry Potter and the Philosopher''s Stone', '1997-06-26', 2),
-        ('Harry Potter and the Chamber of Secrets', '1998-07-02', 2),
-        ('The Hobbit', '1937-09-21', 3),
-        ('The Lord of the Rings: The Fellowship of the Ring', '1954-07-29', 3),
-        ('The Lord of the Rings: The Two Towers', '1954-11-11', 3),
-        ('The Lord of the Rings: The Return of the King', '1955-10-20', 3),
-        ('And Then There Were None', '1939-11-06', 4),
-        ('Murder on the Orient Express', '1934-01-01', 4);
-    `);
+        INSERT INTO responses (cause, solution, error_id)
+        VALUES 
+        ('Invalid input data', 'Please check the data format and try again.', 1),
+        ('Network timeout', 'Ensure your internet connection is stable and try again.', 2),
+        ('Missing authentication token', 'Log in to your account to access this feature.', 3),
+        ('Database server down', 'Contact the system administrator to resolve the issue.', 4);
+      `);
 
     console.log("Database reset successful");
   } catch (error) {

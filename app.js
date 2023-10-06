@@ -2,8 +2,8 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
-import { jSendSuccess, jSendError } from "./jSend.js";
-import { handleErrors, createError, createFail } from "./handleErrors.js";
+// import { jSendSuccess, jSendError } from "./jSend.js";
+// import { handleErrors, createError, createFail } from "./handleErrors.js";
 
 // Import responses-related helper functions
 import {
@@ -110,7 +110,7 @@ app.get("/responses/", async function (req, res) {
 
 // Endpoint to retrieve a specific response by id
 app.get("/responses/:id", async function (req, res, next) {
-  try {
+  // try {
     const id = req.params.id;
     const response = await getResponseById(id);
     // Assume 404 status if the response is not found
@@ -119,10 +119,10 @@ app.get("/responses/:id", async function (req, res, next) {
         .status(404)
         .json({ status: "fail", data: { msg: "Response not found" } });
     }
-    res.status(200).json({ status: "success", data: responses });
-  } catch (err) {
-    handleErrors(err, next);
-  }
+    res.status(200).json({ status: "success", data: response });
+  // } catch (err) {
+  //   handleErrors(err, next);
+  // }
 });
 
 // Endpoint to create a new response
