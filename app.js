@@ -5,23 +5,23 @@ import cors from "cors";
 import { jSendSuccess, jSendError } from "./jSend.js";
 import { handleErrors, createError, createFail } from "./handleErrors.js";
 
-// Import error-related helper functions
+// Import responses-related helper functions
 import {
   getResponses,
   getResponseById,
   createResponse,
   updateResponseById,
   deleteResponseById,
-} from "./errors.js";
+} from "./responses.js";
 
-// Import book-related helper functions
+// Import error-related helper functions
 import {
   getErrors,
   getErrorById,
   createError,
   updateErrorById,
   deleteErrorById,
-} from "./books.js";
+} from "./errors.js";
 
 // Initialize the express app
 const app = express();
@@ -49,14 +49,14 @@ const errorHandler = (err, req, res, next) => {
 
 // Endpoint to retrieve all errors
 app.get("/errors/", async function (req, res) {
-  const errors = await getResponses();
+  const errors = await getErrors();
   res.status(200).json({ status: "success", data: errors });
 });
 
 // Endpoint to retrieve a specific error by id
 app.get("/errors/:id", async function (req, res) {
   const id = req.params.id;
-  const error = await getResponseById(id);
+  const error = await getErrorById(id);
   // Assume 404 status if the error is not found
   if (!error) {
     return res
@@ -69,7 +69,7 @@ app.get("/errors/:id", async function (req, res) {
 // Endpoint to create a new error
 app.post("/errors/", async function (req, res) {
   const data = req.body;
-  const error = await createResponse(data);
+  const error = await createError(data);
   res.status(201).json({ status: "success", data: error });
 });
 
@@ -77,12 +77,12 @@ app.post("/errors/", async function (req, res) {
 app.patch("/errors/:id", async function (req, res) {
   const id = req.params.id;
   const data = req.body;
-  const error = await updateResponseById(id, data);
+  const error = await updateErrorById(id, data);
   // Assume 404 status if the error is not found
   if (!error) {
     return res
       .status(404)
-      .json({ status: "fail", data: { msg: "Response not found" } });
+      .json({ status: "fail", data: { msg: "Error not found" } });
   }
   res.status(200).json({ status: "success", data: error });
 });
@@ -90,74 +90,74 @@ app.patch("/errors/:id", async function (req, res) {
 // Endpoint to delete a specific error by id
 app.delete("/errors/:id", async function (req, res) {
   const id = req.params.id;
-  const error = await deleteResponseById(id);
+  const error = await deleteErrorById(id);
   // Assume 404 status if the error is not found
   if (!error) {
     return res
       .status(404)
-      .json({ status: "fail", data: { msg: "Response not found" } });
+      .json({ status: "fail", data: { msg: "Error not found" } });
   }
   res.status(200).json({ status: "success", data: error });
 });
 
-// Error Route Handlers
+// Responses Route Handlers
 
-// Endpoint to retrieve all books
-app.get("/books/", async function (req, res) {
-  const books = await getErrors();
-  res.status(200).json({ status: "success", data: books });
+// Endpoint to retrieve all responses
+app.get("/responses/", async function (req, res) {
+  const responses = await getResponses();
+  res.status(200).json({ status: "success", data: responses });
 });
 
-// Endpoint to retrieve a specific book by id
-app.get("/books/:id", async function (req, res, next) {
+// Endpoint to retrieve a specific response by id
+app.get("/responses/:id", async function (req, res, next) {
   try {
     const id = req.params.id;
-    const book = await getErrorById(id);
-    // Assume 404 status if the book is not found
-    if (!book) {
+    const response = await getResponseById(id);
+    // Assume 404 status if the response is not found
+    if (!response) {
       return res
         .status(404)
-        .json({ status: "fail", data: { msg: "Error not found" } });
+        .json({ status: "fail", data: { msg: "Response not found" } });
     }
-    res.status(200).json({ status: "success", data: book });
-  } catch (error) {
-    handleErrors(error, next);
+    res.status(200).json({ status: "success", data: responses });
+  } catch (err) {
+    handleErrors(err, next);
   }
 });
 
-// Endpoint to create a new book
-app.post("/books/", async function (req, res) {
+// Endpoint to create a new response
+app.post("/responses/", async function (req, res) {
   const data = req.body;
-  const book = await createError(data);
-  res.status(201).json({ status: "success", data: book });
+  const responses = await createResponse(data);
+  res.status(201).json({ status: "success", data: responses });
 });
 
-// Endpoint to update a specific book by id
-app.patch("/books/:id", async function (req, res) {
+// Endpoint to update a specific response by id
+app.patch("/responses/:id", async function (req, res) {
   const id = req.params.id;
   const data = req.body;
-  const book = await updateErrorById(id, data);
+  const response = await updateResponseById(id, data);
   // Assume 404 status if the book is not found
-  if (!book) {
+  if (!response) {
     return res
       .status(404)
-      .json({ status: "fail", data: { msg: "Error not found" } });
+      .json({ status: "fail", data: { msg: "Response not found" } });
   }
 
-  res.status(200).json({ status: "success", data: book });
+  res.status(200).json({ status: "success", data: response });
 });
 
-// Endpoint to delete a specific book by id
-app.delete("/books/:id", async function (req, res) {
+// Endpoint to delete a specific response by id
+app.delete("/responses/:id", async function (req, res) {
   const id = req.params.id;
-  const book = await deleteErrorById(id);
-  // Assume 404 status if the book is not found
-  if (!book) {
+  const response = await deleteResponseById(id);
+  // Assume 404 status if the response is not found
+  if (!response) {
     return res
       .status(404)
-      .json({ status: "fail", data: { msg: "Error not found" } });
+      .json({ status: "fail", data: { msg: "Response not found" } });
   }
-  res.status(200).json({ status: "success", data: book });
+  res.status(200).json({ status: "success", data: response });
 });
 
 app.use(errorHandler);
