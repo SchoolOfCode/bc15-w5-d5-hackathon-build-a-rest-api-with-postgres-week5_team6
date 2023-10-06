@@ -23,6 +23,15 @@ import {
   deleteErrorById,
 } from "./errors.js";
 
+// Import error-and-response-related helper functions
+import {
+  getErrorsAndResponses,
+  getErrorAndResponsesById,
+  // createError,
+  // updateErrorById,
+  // deleteErrorById,
+} from "./errorsAndResponses.js";
+
 // Initialize the express app
 const app = express();
 // Retrieve the port number from environment variables
@@ -51,6 +60,25 @@ const errorHandler = (err, req, res, next) => {
 app.get("/errors/", async function (req, res) {
   const errors = await getErrors();
   res.status(200).json({ status: "success", data: errors });
+});
+
+// Endpoint to retrieve all errors and associated responses
+app.get("/errors/responses", async function (req, res) {
+  const data = await getErrorsAndResponses();
+  res.status(200).json({ status: "success", data: data });
+});
+
+// Endpoint to retrieve a specific error by id
+app.get("/errors/:id/responses", async function (req, res) {
+  const id = req.params.id;
+  const error = await getErrorAndResponsesById(id);
+  // Assume 404 status if the error is not found
+  if (!error) {
+    return res
+      .status(404)
+      .json({ status: "fail", data: { msg: "Response not found" } });
+  }
+  res.status(200).json({ status: "success", data: error });
 });
 
 // Endpoint to retrieve a specific error by id
