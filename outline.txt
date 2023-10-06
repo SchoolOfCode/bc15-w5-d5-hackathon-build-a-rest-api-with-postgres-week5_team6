@@ -1,0 +1,10 @@
+The idea:
+
+1. Have a table of errors:
+    Capture:
+        Error description
+        Workshop error occurred in
+        Error message
+2. Have a table of potential response
+    Capture:
+        Error cause
