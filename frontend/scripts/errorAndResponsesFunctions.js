@@ -1,25 +1,31 @@
 const userId = document.querySelector("#userId");
 const submitButton = document.querySelector("#getButton");
-const container = document.querySelector("#resultsHolder"); 
+const container = document.querySelector("#resultsHolder");
 
-function displayUserDetails(contentObj, container) {
+function displayErrorAndResponseDetails(contentObj, container) {
   const div = document.createElement("div");
-  appendPara(div, "user", `${contentObj.first_name} ${contentObj.last_name}`);
-  appendPara(div, "email", `Email: ${contentObj.email}`);
-  appendPara(div, "catchphrase", `Catchphrase: ${contentObj.catchphrase}`);
-  appendPara(div, "userId", contentObj.id);
+  console.log(contentObj);
+  appendPara(div, "errordescription", `${contentObj.description}`);
+  appendPara(div, "cause", `${contentObj.cause}`);
+  appendPara(div, "error_code", `${contentObj.error_code}`);
+  appendPara(div, "error_message", `${contentObj.error_message}`);
+  appendPara(div, "solution", contentObj.solution);
+  appendPara(div, "workshop", contentObj.workshop);
   container.appendChild(div);
 }
 
 function displayBookDetails(contentObj, container) {
   const div = document.createElement("div");
-  appendPara(div, "title", `${contentObj.title} - ${contentObj.published_date.slice(0, 4)}`);
+  appendPara(
+    div,
+    "title",
+    `${contentObj.title} - ${contentObj.published_date.slice(0, 4)}`
+  );
   // appendPara(div, "published_date", `${contentObj.published_date.slice(0,4)}`);
   // appendPara(div, "catchphrase", `Catchphrase: ${contentObj.catchphrase}`);
   appendPara(div, "bookId", contentObj.id);
   container.appendChild(div);
 }
-
 
 function appendPara(parent, className, textContent) {
   const elem = document.createElement("p");
@@ -35,11 +41,14 @@ function clearBooks() {
 }
 
 async function showAll() {
-  const response = await sendFetchRequest("GET", "http://localhost:3000/books");
+  const response = await sendFetchRequest(
+    "GET",
+    "http://localhost:3000/errors/responses"
+  );
   if ((response.status = "success")) {
     const contentsArray = response.data;
     contentsArray.forEach((contentObj) => {
-      displayBookDetails(contentObj, container);
+      displayErrorAndResponseDetails(contentObj, container);
     });
   }
 }
@@ -61,8 +70,8 @@ async function getBook() {
 }
 
 function deleteUser1(event) {
-    event.preventDefault();
-    deleteUser();
+  event.preventDefault();
+  deleteUser();
 }
 
 async function deleteUser() {

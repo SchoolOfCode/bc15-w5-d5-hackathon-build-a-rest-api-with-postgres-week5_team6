@@ -42,7 +42,7 @@ export async function createError(error) {
   const result = await pool.query(queryText, [
     error.description,
      error.workshop,
-     error.error_code, 
+     error.error_code,
      error.error_message
   ]);
 
