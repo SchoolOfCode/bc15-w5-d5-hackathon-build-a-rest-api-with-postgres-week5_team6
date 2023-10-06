@@ -34,18 +34,20 @@ export async function createError(error) {
   // Query the database to create a error and return the newly created error
 
   // Define the SQL query to fetch the error with the specified id from the 'errors' table
-  const queryText = `INSERT INTO errors (title, published_date, author_id) VALUES ($1, $2, $3) RETURNING *;`;
+  const queryText = `INSERT INTO errors (description, workshop, error_code, error_message)
+                     VALUES ($1, $2, $3, $4) RETURNING *;`;
 
   // Use the pool object to send the query to the database
   // passing the id as a parameter to prevent SQL injection
   const result = await pool.query(queryText, [
-    error.title,
-    error.published_date,
-    error.author_id,
+    error.description,
+     error.workshop,
+     error.error_code, 
+     error.error_message
   ]);
 
   // The rows property of the result object contains the retrieved records
-  // If a error with the specified id exists, it will be the first element in the rows array
+  // If an error with the specified id exists, it will be the first element in the rows array
   // If no error exists with the specified id, the rows array will be empty
   return result.rows[0] || null;
 }
@@ -66,29 +68,33 @@ export async function updateErrorById(id, updates) {
   //Store result from the querySelectText
   const error = resultSelect.rows[0];
   //
-  // error.title = updates.title ?? error.title;
-  if (updates.hasOwnProperty("title")) {
-    error.title = updates.title;
+  // error.description = updates.title ?? error.title;
+  if (updates.hasOwnProperty("description")) {
+    error.description = updates.description;
   }
-  if (updates.hasOwnProperty("published_date")) {
-    error.published_date = updates.published_date;
+  if (updates.hasOwnProperty("workshop")) {
+    error.workshop = updates.workshop;
   }
-  if (updates.hasOwnProperty("author_id")) {
-    error.author_id = updates.author_id;
+  if (updates.hasOwnProperty("error_code")) {
+    error.error_code = updates.error_code;
+  }
+  if (updates.hasOwnProperty("error_messsage")) {
+    error.error_messsage = updates.error_messsage;
   }
 
 
 
   // Define the SQL query to fetch the error with the specified id from the 'errors' table
-  const queryUpdateText = `UPDATE errors SET title = $2, published_date = $3, author_id = $4 WHERE id = $1 RETURNING *;`;
+  const queryUpdateText = `UPDATE errors SET description = $2, workshop = $3, error_code = $4, error_message = $5 WHERE id = $1 RETURNING *;`;
 
   // Use the pool object to send the query to the database
   // passing the id as a parameter to prevent SQL injection
   const resultUpdate = await pool.query(queryUpdateText, [
     error.id,
-    error.title,
-    error.published_date,
-    error.author_id,
+    error.description,
+    error.workshop,
+    error.error_code,
+    error.error_message
   ]);
 
   // The rows property of the result object contains the retrieved records

@@ -34,13 +34,14 @@ export async function createResponse(response) {
   // Query the database to create an response and return the newly created response
 
   // Define the SQL query to fetch the response with the specified id from the 'responses' table
-  const queryText = `INSERT INTO responses (first_name, last_name) VALUES ($1, $2) RETURNING *;`;
+  const queryText = `INSERT INTO responses (cause, solution, error_id) VALUES ($1, $2, $3) RETURNING *;`;
 
   // Use the pool object to send the query to the database
   // passing the id as a parameter to prevent SQL injection
   const result = await pool.query(queryText, [
-    response.first_name,
-    response.last_name,
+    response.cause,
+    response.solution,
+    response.error_id
   ]);
 
   // The rows property of the result object contains the retrieved records
@@ -65,27 +66,31 @@ export async function updateResponseById(id, updates) {
   //Store result from the querySelectText
   const response = resultSelect.rows[0];
   //
-  if (updates.hasOwnProperty("first_name")) {
-    response.first_name = updates.first_name;
+  if (updates.hasOwnProperty("cause")) {
+    response.cause = updates.cause;
   }
-  if (updates.hasOwnProperty("last_name")) {
-    response.last_name = updates.last_name;
-
-    const queryUpdateText = `UPDATE responses SET first_name = $2, last_name = $3 WHERE id = $1 RETURNING *;`;
+  if (updates.hasOwnProperty("solution")) {
+    response.solution = updates.solution;
+  }
+  if (updates.hasOwnProperty("error_id")) {
+    response.error_id = updates.error_id;
+  }
+    const queryUpdateText = `UPDATE responses SET cause = $2, solution = $3, error_id = $4 WHERE id = $1 RETURNING *;`;
 
     // Use the pool object to send the query to the database
     // passing the id as a parameter to prevent SQL injection
     const resultUpdate = await pool.query(queryUpdateText, [
       response.id,
-      response.first_name,
-      response.last_name,
+      response.cause,
+      response.solution,
+      response.error_id
     ]);
 
     // The rows property of the result object contains the retrieved records
     // If a response with the specified id exists, it will be the first element in the rows array
     // If no response exists with the specified id, the rows array will be empty
     return resultUpdate.rows[0] || null;
-  }
+  
 }
 
 export async function deleteResponseById(id) {
