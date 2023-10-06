@@ -5,27 +5,23 @@ const container = document.querySelector("#resultsHolder");
 function displayErrorAndResponseDetails(contentObj, container) {
   const div = document.createElement("div");
   console.log(contentObj);
-  appendPara(div, "errordescription", `${contentObj.description}`);
-  appendPara(div, "cause", `${contentObj.cause}`);
-  appendPara(div, "error_code", `${contentObj.error_code}`);
-  appendPara(div, "error_message", `${contentObj.error_message}`);
-  appendPara(div, "solution", contentObj.solution);
-  appendPara(div, "workshop", contentObj.workshop);
-  container.appendChild(div);
+  appendPara(div, "errordescription", `Decription: ${contentObj.description}`);
+  appendPara(div, "error_message", `Error message: ${contentObj.error_message}`);
+  appendPara(div, "error_code", `Error code: ${contentObj.error_code}`);
+  appendPara(div, "workshop", `Workshop: ${contentObj.workshop}`);
+  appendPara(div, "cause", `Cause: ${contentObj.cause}`);
+  appendPara(div, "solution", `Solution: ${contentObj.solution}`);
+    container.appendChild(div);
 }
 
-function displayBookDetails(contentObj, container) {
-  const div = document.createElement("div");
-  appendPara(
-    div,
-    "title",
-    `${contentObj.title} - ${contentObj.published_date.slice(0, 4)}`
-  );
-  // appendPara(div, "published_date", `${contentObj.published_date.slice(0,4)}`);
-  // appendPara(div, "catchphrase", `Catchphrase: ${contentObj.catchphrase}`);
-  appendPara(div, "bookId", contentObj.id);
-  container.appendChild(div);
-}
+// function displayBookDetails(contentObj, container) {
+//   const div = document.createElement("div");
+//   appendPara( div, "title", `${contentObj.title} - ${contentObj.published_date.slice(0, 4)}` );
+//   // appendPara(div, "published_date", `${contentObj.published_date.slice(0,4)}`);
+//   // appendPara(div, "catchphrase", `Catchphrase: ${contentObj.catchphrase}`);
+//   appendPara(div, "bookId", contentObj.id);
+//   container.appendChild(div);
+// }
 
 function appendPara(parent, className, textContent) {
   const elem = document.createElement("p");
@@ -34,7 +30,7 @@ function appendPara(parent, className, textContent) {
   parent.appendChild(elem);
 }
 
-function clearBooks() {
+function clearErrors() {
   for (let child of container.children) {
     child.remove();
   }
@@ -53,18 +49,18 @@ async function showAll() {
   }
 }
 
-async function getBook() {
-  const idElem = document.querySelector("#bookId");
-  const url = `http://localhost:3000/books/` + idElem.value;
+async function getError() {
+  const idElem = document.querySelector("#errorId");
+  const url = `http://localhost:3000/errors/${idElem.value}/responses`;
   const response = await sendFetchRequest("GET", url);
-  clearBooks();
+  clearErrors();
   if (response.status === "success") {
     const contentObj = response.data;
-    displayBookDetails(contentObj, container);
+    displayErrorAndResponseDetails(contentObj, container);
     idElem.value = "";
   } else {
     const div = document.createElement("div");
-    appendPara(div, "book", response.data.msg);
+    appendPara(div, "error_message", response.data.msg);
     container.appendChild(div);
   }
 }
